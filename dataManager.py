@@ -13,6 +13,7 @@ class DataManager:
 
 
     def getUserCredential(self, username):
+        #username is a string
         try:
             conn = db.connect(self.dbfile)
             cur = conn.cursor()
@@ -27,6 +28,7 @@ class DataManager:
 
 
     def insertUserCredential(self, username, credential):
+        #username is a string, credential is a string
         try:
             conn = db.connect(self.dbfile)
             cur = conn.cursor()
@@ -40,6 +42,7 @@ class DataManager:
 
 
     def insertUserPattern(self, username, pattern):
+        #username is a string, pattern is something like [[...],[...]]
         try:
             conn = db.connect(self.dbfile)
             cur = conn.cursor()
@@ -59,12 +62,29 @@ class DataManager:
 
 
 
+    def getAllPatterns(self, username):
+        #username is a string, return a list of patterns, where pattern likes [[...],[...]]
+        try:
+            conn = db.connect(self.dbfile)
+            cur = conn.cursor()
+            cur.execute("SELECT pattern FROM patterns WHERE username = '%s'" % username)
+            data = []
+            for r in cur.fetchall():
+                data.append(json.loads(r[0]))
+        except db.Error as e:
+            dme = DataManagerError("Database error while getting user's all patterns , due to: %s" % e.args[0])
+            raise dme
+        return data
+
+
+
     def getUserTrainedPattern(self, username):
+        #username is a string, return pattern like [[...],[...]]
         try:
             conn = db.connect(self.dbfile)
             cur = conn.cursor()
             cur.execute("SELECT trainedPattern FROM users WHERE username = '%s'" % username)
-            trainedPattern = cur.fetchone()[0]
+            trainedPattern = json.loads(cur.fetchone()[0])
             conn.close()
             pass
         except db.Error as e:
@@ -75,10 +95,12 @@ class DataManager:
 
 
     def updateUserTrainedPattern(self, username, pattern):
+        #username is a string, pattern is something like [[...],[...]]
         try:
             conn = db.connect(self.dbfile)
             cur = conn.cursor()
-            cur.execute("UPDATE users SET trainedPattern = '%s' WHERE username = '%s'" % (pattern, username))
+            pstr = json.dumps(pattern)
+            cur.execute("UPDATE users SET trainedPattern = '%s' WHERE username = '%s'" % (pstr, username))
             conn.commit()
             conn.close()
             
@@ -103,16 +125,24 @@ if __name__ == '__main__':
     M = DataManager('db', 10)
     u1 = 'batman'
     p1 = [[1,2,3],[4,5,6]]
+    p11 = [[11,12,13],[14,15,16]]
     c1 = 'helloworld'
     
     u2 = 'catwomen'
     p2 = [[4,5,6],[7,8,9]]
+    p21 = [[14,15,16],[17,18,19]]
     c2 = 'Keep it simple'
-    #M.insertUserPattern(u,p)
+    M.insertUserPattern(u1,p1)
+    M.insertUserPattern(u1,p11)
+    M.insertUserPattern(u2,p2)
+    M.insertUserPattern(u2,p21)
+    #M.insertUserCredential(u1, c1)
     #M.insertUserCredential(u2, c2)
+    #M.updateUserTrainedPattern(u1, 'balabla')
     #M.updateUserTrainedPattern(u2, 'hahah')
     print M.getUserCredential(u1)
     print M.getUserCredential(u2)
     print M.getUserTrainedPattern(u1)
     print M.getUserTrainedPattern(u2)
+    print M.getAllPatterns(u1)
 
