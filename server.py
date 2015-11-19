@@ -7,7 +7,7 @@ import sys
 
 class MyHttpRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        rootdir = './files/' #file location
+        rootdir = './pages/' #file location
         try:
             if self.path.endswith('.html'):
                 f = open(rootdir + self.path) #open requested file
