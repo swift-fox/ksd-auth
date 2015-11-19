@@ -10,6 +10,7 @@ import json
 class MyHttpRequestHandler(BaseHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         self.DM = dataManager.DataManager('db',10)
+        self.count = 0
         BaseHTTPRequestHandler.__init__(self, request, client_address, server)
 
     def do_GET(self):
@@ -37,10 +38,28 @@ class MyHttpRequestHandler(BaseHTTPRequestHandler):
         try:
             if self.headers['Content-type'] == "application/json":
                 length = int(self.headers['Content-Length'])
-                self.send_response(200)
                 data  = json.loads(self.rfile.read(length))
                 username = data['username']
-                encryptedPattern = data['cyphertext']
+                
+                #need decryption
+                pattern = data['ciphertext']
+
+                self.DM.insertUserPattern(username, pattern)
+                self.count = self.count+1
+                if self.count >= 10:
+                    self.count = 0
+                    allPatterns = self.DM.getAllPatterns(username)
+                    #retrain and update trainedPattern
+                
+                #predict
+
+                #send result
+                self.send_response(200)
+                self.send_header('Content-type','text-html')
+                self.end_headers()
+                self.wfile.write("result")
+                
+
 
         except IOError as e:
             self.send_error(str(e))
