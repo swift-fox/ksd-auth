@@ -36,30 +36,34 @@ class MyHttpRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         try:
-            if self.headers['Content-type'] == "application/json":
-                length = int(self.headers['Content-Length'])
-                data  = json.loads(self.rfile.read(length))
-                username = data['username']
-                
-                #need decryption
-                pattern = data['ciphertext']
+            if self.path.endswith('train.html'):
+                if self.headers['Content-type'] == "application/json":
+                    length = int(self.headers['Content-Length'])
+                    data  = json.loads(self.rfile.read(length))
+                    username = data['username']
+                     
+                    #need decryption
+                    pattern = data['ciphertext']
 
-                self.DM.insertUserPattern(username, pattern)
-                self.count = self.count+1
-                if self.count >= 10:
-                    self.count = 0
-                    allPatterns = self.DM.getAllPatterns(username)
-                    #retrain and update trainedPattern
-                
-                #predict
+                    self.DM.insertUserPattern(username, pattern)
+                    self.count = self.count+1
+                    if self.count >= 10:
+                        self.count = 0
+                        allPatterns = self.DM.getAllPatterns(username)
+                        #retrain and update trainedPattern
+                    
+                    #predict
 
-                #send result
-                self.send_response(200)
-                self.send_header('Content-type','text-html')
-                self.end_headers()
-                self.wfile.write("result")
-                
+                    #send result
+                    self.send_response(200)
+                    self.send_header('Content-type','text-html')
+                    self.end_headers()
+                    self.wfile.write("result")
 
+            elif self.path.endswith('auth.html'):
+                #create the account
+                pass
+                
 
         except IOError as e:
             self.send_error(str(e))

@@ -12,6 +12,20 @@ class DataManager:
 
 
 
+    def createUserAccount(self, username, credential):
+        #username is a string, credential is a string
+        try:
+            conn = db.connect(self.dbfile)
+            cur = conn.cursor()
+            cur.execute("INSERT INTO users(username, credential) VALUES('%s', '%s')" % (username, credential))
+            conn.commit()
+            conn.close()
+        except db.Error as e:
+            dme = DataManagerError("Database error while creating user account, due to: %s" % e.args[0])
+            raise dme
+
+
+
     def getUserCredential(self, username):
         #username is a string
         try:
@@ -27,19 +41,19 @@ class DataManager:
     
 
 
-    def insertUserCredential(self, username, credential):
-        #username is a string, credential is a string
+    def updateUserCredential(self, username, credential):
         try:
             conn = db.connect(self.dbfile)
             cur = conn.cursor()
-            cur.execute("INSERT INTO users(username, credential) VALUES('%s', '%s')" % (username, credential))
+            cur.execute("UPDATE users SET credential = '%s' WHERE username = '%s'" % (credential, username))
             conn.commit()
             conn.close()
+
         except db.Error as e:
-            dme = DataManagerError("Database error while inserting user's credential, due to: %s" % e.args[0])
+            dme = DataManagerError("Database error while getting user's credential, due to: %s" % e.args[0])
             raise dme
-
-
+            
+    
 
     def insertUserPattern(self, username, pattern):
         #username is a string, pattern is something like [[...],[...]]
