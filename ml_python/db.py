@@ -1,11 +1,11 @@
 class Database(object):
     def __init__(self):
-        pass
+        return
     def add_user(username, password):
-        pass
+        return
     def read_patterns(username):
-        pass
+        return
     def add_pattern(username, pattern):
-        pass
+        return
     def exist_user(username, password):
-        pass
+        return
