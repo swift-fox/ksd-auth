@@ -11,7 +11,7 @@ prev_passwd = ''
 patterns = []
 
 def getTimeInMills():
-    return int(time.time()*1000)
+    return time.time()
 
 def keyup(e):
     global  startTime, keyPress, keyRelease, passwd, prev_passwd, patterns
@@ -29,7 +29,8 @@ def keyup(e):
         else:
             patterns.append((keyPress, keyRelease))
             pm = PatternMatch()
-            print(pm.min_dist(patterns))
+            #print(pm.is_similar(patterns[-1], patterns[:-1], "EUC_DIST"))
+            print(pm.is_similar(patterns[-1], patterns[:-1], "SVM"))
         passwd = ''
         keyPress = []
         keyRelease = []
