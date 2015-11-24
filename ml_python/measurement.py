@@ -1,3 +1,6 @@
+'''
+Measure distance between two points and normalize
+'''
 from math import*
 from decimal import Decimal
 

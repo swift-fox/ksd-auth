@@ -1,3 +1,8 @@
+'''
+Simulate and test key press and release event
+'''
+
+
 from Tkinter import *
 from pattern_match import PatternMatch
 import time
@@ -29,8 +34,7 @@ def keyup(e):
         else:
             patterns.append((keyPress, keyRelease))
             pm = PatternMatch()
-            #print(pm.is_similar(patterns[-1], patterns[:-1], "EUC_DIST"))
-            print(pm.is_similar(patterns[-1], patterns[:-1], "SVM"))
+            print(pm.is_similar(patterns[-1], patterns[:-1], "EUC_DIST"))
         passwd = ''
         keyPress = []
         keyRelease = []

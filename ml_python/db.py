@@ -1,3 +1,7 @@
+'''
+Temporary Database interface (will change)
+'''
+
 class Database(object):
     def __init__(self):
         return

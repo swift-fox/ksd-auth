@@ -1,0 +1,92 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% writeLaTeX Example: Academic Paper Template
+%
+% Source: http://www.writelatex.com
+%
+% Feel free to distribute this example, but please keep the referral
+% to writelatex.com
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% How to use writeLaTeX:
+%
+% You edit the source code here on the left, and the preview on the
+% right shows you the result within a few seconds.
+%
+% Bookmark this page and share the URL with your co-authors. They can
+% edit at the same time!
+%
+% You can upload figures, bibliographies, custom classes and
+% styles using the files menu.
+%
+% If you're new to LaTeX, the wikibook is a great place to start:
+% http://en.wikibooks.org/wiki/LaTeX
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[twocolumn,showpacs,%
+  nofootinbib,aps,%superscriptaddress,
+  eqsecnum,prd,notitlepage,showkeys,10pt]{revtex4-1}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{dcolumn}
+\usepackage{threeparttable}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[hidelinks]{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{array}
+\usepackage{makecell}
+\newcolumntype{x}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+% table thick line
+\makeatletter
+\newcommand{\thickhline}{%
+    \noalign {\ifnum 0=`}\fi \hrule height 1pt
+    \futurelet \reserved@a \@xhline
+}
+
+\newcommand\diag[4]{%
+  \multicolumn{1}{p{#2}|}{\hskip-\tabcolsep
+  $\vcenter{\begin{tikzpicture}[baseline=0,anchor=south west,inner sep=#1]
+  \path[use as bounding box] (0,0) rectangle (#2+2\tabcolsep,\baselineskip);
+  \node[minimum width={#2+2\tabcolsep-\pgflinewidth},
+        minimum  height=\baselineskip+\extrarowheight-\pgflinewidth] (box) {};
+  \draw[line cap=round] (box.north west) -- (box.south east);
+  \node[anchor=south west] at (box.south west) {#3};
+  \node[anchor=north east] at (box.north east) {#4};
+ \end{tikzpicture}}$\hskip-\tabcolsep}}
+
+
+\begin{document}
+
+\title{Authentication Enhancement by Keystroke Dynamics: Another Dimension of the Password }
+\author{Myungho Jung}
+\affiliation{University of Utah\\myungho.jung@utah.edu}
+
+\begin{abstract}
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+
+\section{Method}
+
+\section{Algorithm}
+
+\section{Test}
+
+\section{Implementation}
+
+\section{Conclusion}
+
+%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%
+%\newpage
+%\bibliographystyle{plain}
+%\bibliography{report}
+
+\end{document} 
