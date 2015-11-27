@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>ksd-auth - Pattern Recorder</title>
+<script>
+var press, release, base;
+
+press = [];
+release = [];
+dataset = [];
+
+function gen_tab(tab)
+{
+        var out = '';
+        while(tab--) out += '    ';
+        return out;
+}
+
+function output_array(a)
+{
+        var out = '[';
+
+        for(var i = 0; i < a.length - 1; i++)
+                out += a[i] + ', ';
+
+        if(a.length)
+                out += a[a.length - 1];
+
+        out += ']';
+        return out;
+}
+
+function output_pattern(p, tab)
+{
+        var out;
+
+        if(document.getElementById('compact').checked) {
+                out = gen_tab(tab) + '(' + output_array(p[0]) + ', ' + output_array(p[1]) + ')';
+        } else {
+                out = gen_tab(tab) + '(\n';
+                out += gen_tab(tab+1) + output_array(p[0]) + ',\n';
+                out += gen_tab(tab+1) + output_array(p[1]) + '\n';
+                out += gen_tab(tab) + ')';
+        }
+
+        return out;
+}
+
+function onKeyDown(e)
+{
+        if(event.keyCode == 13)
+        {
+                if(press.length != 0 && release.length != 0)
+                        dataset.push([press,release]);
+
+                document.getElementById('dataset').innerHTML = 'len(dataset) = '+ dataset.length +'\n\n';
+                document.getElementById('dataset').innerHTML += 'dataset = [\n';
+
+                for(var i = 0; i < dataset.length - 1; i++)
+                        document.getElementById('dataset').innerHTML += output_pattern(dataset[i], 1) + ',\n';
+
+                if(dataset.length)
+                        document.getElementById('dataset').innerHTML += output_pattern(dataset[dataset.length - 1], 1) + '\n';
+
+                document.getElementById('dataset').innerHTML += '];';
+        }
+
+        if(event.keyCode != 8 && event.keyCode != 13)
+        {
+                if(press.length == 0)
+                        base = Date.now();
+
+                press.push(Date.now() - base);
+
+                document.getElementById('output').innerHTML = "<b>Press:</b> " + press + "<br />";
+                document.getElementById('output').innerHTML += "<b>Release:</b> " + release;
+        }else{
+                document.getElementById('passwd').value = "";
+                press = [];
+                release = [];
+        }        
+}
+
+function onKeyUp(e)
+{
+        if(event.keyCode != 8 && event.keyCode != 13)
+        {
+                release.push(Date.now() - base);
+                document.getElementById('output').innerHTML = "<b>Press:</b> " + press + "<br />";
+                document.getElementById('output').innerHTML += "<b>Release:</b> " + release;
+        }
+}
+</script>
+</head>
+<body>
+<h1>Pattern Recorder for ksd-auth</h1>
+<p><ol>
+<li>Input the password in the following input box, and press ENTER.</li>
+<li>Repeat until enough patterns are collected.</li>
+<li>Copy the generated Python code representing the pattern set.</li>
+<li>To generate compact code, check "compact" <b>and press ENTER in the input box</b>.</li>
+</ol></p>
+<p><input id="passwd" onkeydown="onKeyDown()" onkeyup="onKeyUp()" /></p>
+<p id="output"></p>
+<hr />
+<p><b>Dataset</b> (<input id="compact" type="checkbox" />compact)</p>
+<pre id="dataset"></pre>
+</body>
+</html>
