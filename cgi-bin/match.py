@@ -10,9 +10,8 @@ def match(pattern, model):
         diff += math.fabs(p - m)
 
     diff /= len(model[0])
-    similarity = 1 / (diff / config.matching_normal_error + 1)
 
-    return (similarity > config.matching_thresh, similarity)
+    return (diff < config.matching_error_thresh, diff)
 
 def train(dataset):
     press = [0] * len(dataset[0][0])
