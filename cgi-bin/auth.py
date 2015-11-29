@@ -35,7 +35,7 @@ if u:
     
         if is_match:
             u.add_pattern(pattern)
-            error = ''
+            error = 'Authentication successful.'
         else:
             error = 'Timing pattern doesn\'t match.'
     else:

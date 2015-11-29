@@ -24,6 +24,20 @@ function encrypt(password, pattern)
     return JSON.stringify(pattern);
 }
 
+function say(msg)
+{
+    var msgbox = document.getElementById('msgbox');
+    msgbox.innerText = msg;
+    msgbox.style.display = msg ? 'block' : 'none';
+}
+
+function say2(msg)
+{
+    var msgbox = document.getElementById('msgbox2');
+    msgbox.innerText = msg;
+    msgbox.style.display = msg ? 'block' : 'none';
+}
+
 function login() {
     var username, ciphertext, msg;
 
@@ -32,14 +46,11 @@ function login() {
     msg = {username : username, ciphertext : ciphertext};
 
     request("cgi-bin/auth.py", msg, function(response) {
-        if(response[0])
-            alert('AUTH DONE: '+response[1]);
-        else {
-            alert('AUTH FAILED: '+response[1]+' Reason: '+response[2]);
+        say(response[2]+'\nTiming pattern error: '+ response[1]+' ms.');
+        if(!response[0])
             password.clear();
-        }
     });
-    alert(ciphertext);
+
     return false;
 }
 
@@ -50,11 +61,11 @@ function register() {
     msg = {username : username, password : password.getText(), pattern : password.getPattern()};
 
     request("cgi-bin/user.py?new", msg, function(response) {
-        if(response)
-            alert('NEW USER DONE');
-        else
-            alert('NEW USER FAILED');
-        password.clear();
+        if(response) {
+            say2('Account created.');
+            password.clear();
+        } else
+            say2('Failed: username already in use.');
     });
 }
 </script>
@@ -124,6 +135,9 @@ h1 span{
 .horizontal_bar hr{
     border: #d0d0d0 solid 1px;
 }
+#msgbox, #msgbox2{
+    display: none;
+}
 form{
     margin: 0;
 }
@@ -137,8 +151,10 @@ form{
 <p><input id="username" /></p>
 <p class="title">Password</p>
 <p><input id="password" /></p>
+<p id="msgbox" class="title"></p>
 <p><input type="submit" value="Sign in" /></p>
 <div class="horizontal_bar"><p>New account?</p><hr /></div>
+<p id="msgbox2" class="title"></p>
 <p><input type="button" value="Create an account" onclick="register()" /></p>
 <p>Input username and password. Then click the above button.</p>
 </form>
