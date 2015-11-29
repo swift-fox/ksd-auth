@@ -19,5 +19,5 @@ Prerequisite: Python 2.7
 
 3. Initialize the database at [http://localhost:8000/cgi-bin/user.py](http://localhost:8000/cgi-bin/user.py)
 4. Visit the demo page at [http://localhost:8000/demo.html](http://localhost:8000/demo.html)
-5. Register a new user by typing a username and password and click the "Create an account" button
-6. Refresh the page and try to login.
+5. Input a username and type a password. Then click "Create an account"
+6. Refresh the page and use the same credential to to login.
