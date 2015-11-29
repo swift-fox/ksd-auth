@@ -1,5 +1,18 @@
-# ksd_auth
-Keystroke Dynamics Authentication: Another Dimension of the Password
+# ksd-auth
+Keystroke Dynamics Authentication library.
 
+##What it is
+Authenticate the user with not only the password, but also how he/she types it.
 
+The browser-side records the timing pattern when the user types the password. The server-side compares it against previous patterns to authenticate the user.
 
+The timing pattern of a user inputting a password is an unique and relatively inertial characteristic. Making keystroke dynamics an effective identification to distinguish the user from imposters. This library exploits this, making it another dimension of the password and strengthening password-based authentication protocols.
+
+## How to use
+1. Checkout the code
+2. Start the server with
+    ./server.sh
+3. Visit the demo page
+    http://localhost:8000/demo.html
+4. Register a new user by typing a username and password and click the "Create an account" button
+5. Refresh the page and try to login.
