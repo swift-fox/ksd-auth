@@ -8,11 +8,16 @@ The browser-side records the timing pattern when the user types the password. Th
 
 The timing pattern of a user inputting a password is an unique and relatively inertial characteristic. Making keystroke dynamics an effective identification to distinguish the user from imposters. This library exploits this, making it another dimension of the password and strengthening password-based authentication protocols.
 
-## How to use
+## Try it!
+
+Prerequisite: Python 2.7
+
 1. Checkout the code
 2. Start the server with
-    ./server.sh
-3. Visit the demo page
-    http://localhost:8000/demo.html
-4. Register a new user by typing a username and password and click the "Create an account" button
-5. Refresh the page and try to login.
+
+        ./server.sh
+
+3. Initialize the database at [http://localhost:8000/cgi-bin/user.py](http://localhost:8000/cgi-bin/user.py)
+4. Visit the demo page at [http://localhost:8000/demo.html](http://localhost:8000/demo.html)
+5. Register a new user by typing a username and password and click the "Create an account" button
+6. Refresh the page and try to login.
