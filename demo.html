@@ -1,0 +1,147 @@
+<html>
+<head>
+<title>Keystroke Dynamics Authentication - Demo</title>
+<script src="ksd-auth.js"></script>
+<script>
+var password;
+function init() {
+    password = ksd_auth(document.getElementById('password'));
+}
+
+function request(url, msg_obj, callback) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (xhttp.readyState == 4 && xhttp.status == 200)
+            callback(JSON.parse(xhttp.responseText));
+    };
+    xhttp.open("POST", url, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("msg=" + encodeURIComponent(JSON.stringify(msg_obj)));
+}
+
+function encrypt(password, pattern)
+{
+    return JSON.stringify(pattern);
+}
+
+function login() {
+    var username, ciphertext, msg;
+
+    username = document.getElementById('username').value;
+    ciphertext = encrypt(password.getText(), password.getPattern());
+    msg = {username : username, ciphertext : ciphertext};
+
+    request("cgi-bin/auth.py", msg, function(response) {
+        if(response[0])
+            alert('AUTH DONE: '+response[1]);
+        else {
+            alert('AUTH FAILED: '+response[1]+' Reason: '+response[2]);
+            password.clear();
+        }
+    });
+    alert(ciphertext);
+    return false;
+}
+
+function register() {
+    var username, msg;
+
+    username = document.getElementById('username').value;
+    msg = {username : username, password : password.getText(), pattern : password.getPattern()};
+
+    request("cgi-bin/user.py?new", msg, function(response) {
+        if(response)
+            alert('NEW USER DONE');
+        else
+            alert('NEW USER FAILED');
+        password.clear();
+    });
+}
+</script>
+<style>
+body{
+    font-family: Arial, sans-serif;
+}
+h1{
+    text-align: center;
+    font-weight: normal;
+    font-size: 28px;
+    line-height: 48px;
+}
+h1 span{
+    color: #38b246;
+}
+.login_form{
+    border: solid #d0d0d0 1px;
+    border-radius: 3px;
+    width: 300px;
+    margin: 50px auto 0 auto;
+    padding: 25px;
+}
+.login_form input{
+    width: 100%;
+    height: 30px;
+    border: solid #d0d0d0 1px;
+    border-radius: 3px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+}
+.login_form input[type=submit]{
+    background: #53d762;
+    border-color: #53d762;
+    color: white;
+}
+.login_form input[type=button]{
+    background: #d0d0d0;
+}
+.login_form p{
+    margin: 20px 0 0 0;
+    font-size: 13px;
+}
+.login_form h2{
+    font-size: 28px;
+    font-weight: normal;
+    line-height: 28px;
+    margin: 0;
+}
+.login_form .title{
+    margin-bottom: -20px;
+    font-weight: bold;
+    line-height: 20px;
+}
+.horizontal_bar{
+    color: #999;
+    text-align: center;
+}
+.horizontal_bar p{
+    background-color: white;
+    position: relative;
+    top: 16px;
+    display: inline-block;
+    padding: 0 8px;
+    margin: 0;
+}
+.horizontal_bar hr{
+    border: #d0d0d0 solid 1px;
+}
+form{
+    margin: 0;
+}
+</style>
+</head>
+<body onload="init()">
+<div class="login_form">
+<form onsubmit="return login()">
+<h2>Sign in</h2>
+<p class="title">Username</p>
+<p><input id="username" /></p>
+<p class="title">Password</p>
+<p><input id="password" /></p>
+<p><input type="submit" value="Sign in" /></p>
+<div class="horizontal_bar"><p>New account?</p><hr /></div>
+<p><input type="button" value="Create an account" onclick="register()" /></p>
+<p>Input username and password. Then click the above button.</p>
+</form>
+</div>
+</body>
+</html>
