@@ -6,7 +6,7 @@ Authenticate the user with not only the password, but also how he/she types it.
 
 The browser-side records the timing pattern when the user types the password. The server-side compares it against previous patterns to authenticate the user.
 
-The timing pattern of a user inputting a password is an unique and relatively inertial characteristic. Making keystroke dynamics an effective identification to distinguish the user from imposters. This library exploits this, making it another dimension of the password and strengthening password-based authentication protocols.
+The timing pattern of a user inputting a password is an unique and relatively inertial characteristic, making keystroke dynamics an effective identification to distinguish the user from imposters. This library exploits it and makes it another dimension of the password, strengthening password-based authentication protocols.
 
 ## Try it!
 
