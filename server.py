@@ -4,6 +4,7 @@ import SocketServer
 import sys
 import dataManager
 import json
+from match import match, train
 
 
 
@@ -45,20 +46,36 @@ class MyHttpRequestHandler(BaseHTTPRequestHandler):
                     #need decryption
                     pattern = data['ciphertext']
 
-                    self.DM.insertUserPattern(username, pattern)
-                    self.count = self.count+1
-                    if self.count >= 10:
-                        self.count = 0
-                        allPatterns = self.DM.getAllPatterns(username)
-                        #retrain and update trainedPattern
-                    
+
+                    #Check user credential
+
+
                     #predict
+                    model = self.DM.getUserTrainedPattern(username)
+                    predict_rlt, similarity = match(pattern, model)
+
+                   
+                    #train
+                    if predict_rlt:
+                        self.DM.insertUserPattern(username, pattern)
+                        self.count = self.count+1
+                        if self.count >= 10:
+                            self.count = 0
+                            #retrain and update trainedPattern
+                            allPatterns = self.DM.getAllPatterns(username)
+                            new_model = train(allPatterns)
+                            self.DM.updateUserTrainedPattern(username, new_model)
+                    else:
+                        pass
+                    
 
                     #send result
                     self.send_response(200)
                     self.send_header('Content-type','text-html')
                     self.end_headers()
                     self.wfile.write("result")
+
+
 
             elif self.path.endswith('auth.html'):
                 #create the account
