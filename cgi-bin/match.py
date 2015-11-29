@@ -9,7 +9,8 @@ def match(pattern, model):
     for p, m in zip(_pattern, _model):
         diff += math.fabs(p - m)
 
-    diff /= len(model[0])
+    if len(model[0]):
+        diff /= len(model[0])
 
     return (diff < config.matching_error_thresh, diff)
 
