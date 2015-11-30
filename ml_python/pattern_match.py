@@ -5,6 +5,7 @@ Compare two points and detect novelty
 from db import Database
 from measurement import Measurement
 import numpy
+import scipy.spatial.distance as distance
 from sklearn import svm
 
 class PatternMatch:
@@ -48,6 +49,20 @@ class PatternMatch:
         dist = numpy.linalg.norm(mean_gap-new_gap)
         return True if weight*limit > dist else False
 
+    # Compute Mahalanobis distance
+    def mah_dist(self, new_pat, old_pats, min_limit):
+        old_gaps = []
+        new_gap = self.convert_pattern_to_gaps(new_pat)
+        for pat in old_pats:
+            old_gaps.append(self.convert_pattern_to_gaps(pat))
+        old_arr = numpy.array(old_gaps)
+        cov = numpy.cov(old_arr, rowvar=0)
+        cov_inv = numpy.linalg.pinv(cov)
+        mean = numpy.mean(old_gaps, axis=0)
+        dist = numpy.sqrt(distance.mahalanobis(new_gap, mean, cov_inv))
+        print('dist = ', dist)
+        return True if dist < min_limit else False
+
     # Check novelty by one-class SVMs
     def svm_novelty(self, new_pat, old_pats):
         old_gaps = []
@@ -75,6 +90,8 @@ class PatternMatch:
         elif(method == 'MEAN_STD'): # Using mean and standard deviation
             weight = 1.0
             return self.avg_dist(new_pat, old_pats, weight, 0.1)
+        elif(method == 'MAH_DIST'): # Using mean and standard deviation
+            return self.mah_dist(new_pat, old_pats, 3.0)
         elif(method == 'SVM'): # One class SVMs
            return self.svm_novelty(new_pat, old_pats)
         else:
