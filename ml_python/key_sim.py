@@ -26,7 +26,7 @@ def keyup(e):
         print('keyPress: ', keyPress)
         print('keyRelease: ', keyRelease)
 
-        if not prev_passwd:
+        if not prev_passwd or len(patterns) < len(passwd):
             prev_passwd = passwd
             patterns.append((keyPress, keyRelease))
         elif prev_passwd != passwd:
@@ -34,7 +34,7 @@ def keyup(e):
         else:
             patterns.append((keyPress, keyRelease))
             pm = PatternMatch()
-            print(pm.is_similar(patterns[-1], patterns[:-1], "EUC_DIST"))
+            print(pm.is_similar(patterns[-1], patterns[:-1], "MAH_DIST"))
         passwd = ''
         keyPress = []
         keyRelease = []
