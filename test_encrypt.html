@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #container{
+            font-family:monospace;
+            font-weight:bold;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+
+<body>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+<script type="text/javascript" src="aes-js.js"></script>
+<div id="container"></div>
+
+<script>
+//    var password = '123456';
+//    //var pattern = 'Im trying to build two functions using PyCrypto that accept two parameters: the message and the key, and then encrypt/decrypt the message';
+//    var pattern = 'sjw';
+//    var time = 0;
+////    var time = new Date().getTime();
+//    password = '123456';
+//    hash = CryptoJS.SHA1(pattern + time.toString());
+//    message = hash + '#'+ pattern + '#' + time.toString();
+//    var key = CryptoJS.MD5(password);
+//    console.log(key.toString());
+//    var encrypted = CryptoJS.AES.encrypt(message, key.toString(), {mode: CryptoJS.mode.CBC});
+//    document.write(encrypted.ciphertext.toString());
+//    document.write('<br/>');
+//    document.write(encrypted.iv.toString());
+//    var decrypted = CryptoJS.AES.decrypt(encrypted, key.toString(), {mode: CryptoJS.mode.CBC});
+//    console.log(encrypted);
+//    document.write('<br/>');
+//    document.write(decrypted.toString(CryptoJS.enc.Utf8));
+
+    function encrypt(password, pattern)
+    {
+        var time = new Date().getTime();
+//        generate sha-1 message digest
+//        var time = 100;
+        hash = CryptoJS.SHA1(pattern + time.toString());
+        message = hash + '###'+ pattern + '###' + time.toString() + '###';
+        var key = CryptoJS.MD5(password);
+        console.log(key.toString())
+        console.log(message.toString())
+//        salt_para = '00000000'
+        key = CryptoJS.enc.Hex.parse(key.toString());
+        var iv  = CryptoJS.enc.Hex.parse('00000000000000000000000000000000');
+//        var iv = '0000000000000000';
+//        cipher = CryptoJS.lib.CipherParams.create({
+//            ciphertext: CryptoJS.enc.Base64.parse(encrypted.ciphertext)
+//        })
+//        result = CryptoJS.AES.decrypt(cipher, key, {iv: iv, mode: CryptoJS.mode.CFB});
+
+//        var encrypted = CryptoJS.AES.encrypt(message, key.toString(), {mode: CryptoJS.mode.CBC, iv: iv_para, salt: CryptoJS.enc.Hex.parse("4521F86027413403")});
+        var encrypted = CryptoJS.AES.encrypt(message, key, {mode: CryptoJS.mode.CBC, iv: iv});
+        console.log(encrypted.iv.toString())
+        var send = encrypted.iv.toString(CryptoJS.enc.Hex) + encrypted.ciphertext.toString(CryptoJS.enc.Hex);
+        // document.write(send);
+        var decrypted = CryptoJS.AES.decrypt(encrypted, key.toString(), {mode: CryptoJS.mode.CBC});
+        // document.write('<br/>');
+        // document.write(decrypted.toString(CryptoJS.enc.Utf8));
+        // console.log(encrypted.ciphertext.toString());
+        // console.log(encrypted);
+        // console.log(encrypted.salt.toString());
+        // console.log(encrypted.key.toString());
+        // console.log(decrypted);
+        return send;
+    }
+    encrypt('123456abcdef','Hello i am shijunwei');
+//    function encrypt2(password, pattern)
+//    {
+//        var key = aesjs.util.convertStringToBytes("Example128BitKey");
+//
+//        // The initialization vector, which must be 16 bytes
+//        var iv = aesjs.util.convertStringToBytes("IVMustBe16Bytes.");
+//
+//        // Convert text to bytes
+//        var text = 'TextMustBe16Byte';
+//        var textBytes = aesjs.util.convertStringToBytes(text);
+//
+//        var aesCbc = new aesjs.ModeOfOperation.cbc(key, iv);
+//        var encryptedBytes = aesCbc.encrypt(textBytes);
+//
+//        // The cipher-block chaining mode of operation maintains internal
+//        // state, so to decrypt a new instance must be instantiated.
+//        var aesCbc = new aesjs.ModeOfOperation.cbc(key, iv);
+//        var decryptedBytes = aesCbc.decrypt(encryptedBytes);
+//
+//        // Convert our bytes back into text
+//        var decryptedText = aesjs.util.convertBytesToString(decryptedBytes);
+//        console.log(decryptedText);
+//        // "TextMustBe16Byte"
+//    }
+//    encrypt2('123456','sjw');
+</script>
+</body>
+</html>

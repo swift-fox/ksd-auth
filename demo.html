@@ -2,6 +2,9 @@
 <head>
 <title>Keystroke Dynamics Authentication - Demo</title>
 <script src="ksd-auth.js"></script>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
 <script>
 var password;
 function init() {
@@ -21,7 +24,30 @@ function request(url, msg_obj, callback) {
 
 function encrypt(password, pattern)
 {
-    return JSON.stringify(pattern);
+    pattern = JSON.stringify(pattern);
+    var time = new Date().getTime();
+    // generate sha-1 message digest
+    hash = CryptoJS.SHA1(pattern + time.toString());
+    message = hash + '###'+ pattern + '###' + time.toString() + '###';
+    var key = CryptoJS.MD5(password);
+    console.log(key.toString())
+    console.log(message.toString())
+    key = CryptoJS.enc.Hex.parse(key.toString());
+    var iv  = CryptoJS.enc.Hex.parse('00000000000000000000000000000000');
+
+    var encrypted = CryptoJS.AES.encrypt(message, key, {mode: CryptoJS.mode.CBC, iv: iv});
+    console.log(encrypted.iv.toString())
+    var send = encrypted.iv.toString(CryptoJS.enc.Hex) + encrypted.ciphertext.toString(CryptoJS.enc.Hex);
+    var decrypted = CryptoJS.AES.decrypt(encrypted, key.toString(), {mode: CryptoJS.mode.CBC});
+    // document.write(send);
+    // document.write('<br/>');
+    // document.write(decrypted.toString(CryptoJS.enc.Utf8));
+    // console.log(encrypted.ciphertext.toString());
+    // console.log(encrypted);
+    // console.log(encrypted.salt.toString());
+    // console.log(encrypted.key.toString());
+    // console.log(decrypted);
+    return send;
 }
 
 function say(msg)
