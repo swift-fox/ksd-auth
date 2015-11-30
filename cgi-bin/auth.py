@@ -31,13 +31,13 @@ def decrypt(cipherText, password):
     # compare hash
     hash_s = SHA.new(pattern_recv + time_recv).hexdigest()
     if hash_s != hash_recv:
-        print "hash doesn't match!"
+        # print "hash doesn't match!"
         return False
 
     # compare time
     time_recv = float(time_recv) / 1000
     if time_s - time_recv > 20 or time_s < time_recv:
-        print "Invalid time! "
+        # print "Invalid time!"
         return False
     # print pattern_recv
     return pattern_recv
