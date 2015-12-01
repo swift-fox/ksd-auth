@@ -26,20 +26,21 @@ def decrypt(cipherText, password):
     
     # Extract the hash, pattern and time
     para = decrypted.split('###')
+    if len(para) < 4:
+        return False
     hash_recv, pattern_recv, time_recv = para[0], para[1], para[2]
 
     # compare hash
     hash_s = SHA.new(pattern_recv + time_recv).hexdigest()
     if hash_s != hash_recv:
-        print "hash doesn't match!"
+        # print "hash doesn't match!"
         return False
 
     # compare time
     time_recv = float(time_recv) / 1000
     if time_s - time_recv > 20 or time_s < time_recv:
-        print "Invalid time! "
+        # print "Invalid time!"
         return False
-    # print pattern_recv
     return pattern_recv
     # If match
         # Convert the pattern into Python array
