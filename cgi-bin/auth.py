@@ -3,36 +3,19 @@
 import cgi, json, match
 from user import user
 
-def decrypt(ciphertext, password):
-    # Generate key from password
-
-    # Decrypt the ciphertext
-    
-    # Extract the pattern and compute the hash
-
-    # Extract the hash and compare
-
-    # If match
-        # Convert the pattern into Python array
-        # return the array
-    # else
-        # return false
-    return ciphertext
-
 data = cgi.FieldStorage()
 msg = json.loads(data['msg'].value)
 u = user.get(msg['username'])
+password = msg['password']
 
 is_match = False
 similarity = 0
 
 if u:
-    plaintext = decrypt(msg['ciphertext'], u.password)
-
-    if plaintext:
-        pattern = json.loads(plaintext)
+    if u.password == password:
+        pattern = msg['pattern']
         is_match, similarity = match.match(pattern, u.pattern)
-    
+
         if is_match:
             u.add_pattern(pattern)
             error = 'Authentication successful.'

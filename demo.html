@@ -19,11 +19,6 @@ function request(url, msg_obj, callback) {
     xhttp.send("msg=" + encodeURIComponent(JSON.stringify(msg_obj)));
 }
 
-function encrypt(password, pattern)
-{
-    return JSON.stringify(pattern);
-}
-
 function say(msg)
 {
     var msgbox = document.getElementById('msgbox');
@@ -39,11 +34,10 @@ function say2(msg)
 }
 
 function login() {
-    var username, ciphertext, msg;
+    var username, msg;
 
     username = document.getElementById('username').value;
-    ciphertext = encrypt(password.getText(), password.getPattern());
-    msg = {username : username, ciphertext : ciphertext};
+    msg = {username : username, password : password.getText(), pattern : password.getPattern()};
 
     request("cgi-bin/auth.py", msg, function(response) {
         say(response[2]+'\nTiming pattern error: '+ response[1]+' ms.');
