@@ -21,7 +21,7 @@ var ksd_auth = (function(input) {
     }
 
     input.onkeyup = function() {
-        if(ignore.indexOf(event.keyCode) < 0)
+        if(press.length != 0 && ignore.indexOf(event.keyCode) < 0)
             release.push(Date.now() - base);
     }
     
