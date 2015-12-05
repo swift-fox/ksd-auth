@@ -1,7 +1,10 @@
-import math
+﻿import math
 import config
 
 def match(pattern, model):
+    if len(model[0]) != len(pattern[0]) or len(model[1]) != len(pattern[1]):
+        return (False, 0)
+
     _pattern = pattern[0] + pattern[1]
     _model = model[0] + model[1]
 
