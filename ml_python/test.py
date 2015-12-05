@@ -1,61 +1,79 @@
 import numpy as np
-import scipy.spatial.distance as dist
-import matplotlib.pyplot as plt
-from random import gauss
+import statistics as st
+from sklearn import svm
 
-def make_rand_vector(dims, min_v, max_v):
-    vec = [gauss(min_v, max_v) for i in range(dims)]
-    mag = sum(x**2 for x in vec) ** .5
-    return [x/mag for x in vec]
+def diff_one_interval(pat, mean, var):
+    dim = len(pat)
+    for i in range(dim-1):
+        if abs(pat[i]-mean[i]) > var:
+            return True
+    return False
 
-def gen_uni_random(dim, v_dur, v_int, size):
-    r_int = np.random.uniform(0, v_int*2, size)
-    r_dur = np.random.uniform(0, v_dur*2, size)
-    r_pat = []
-    for pat in range(size):
-        pat = np.linspace(0, 0, dim*2)
-        for i in range(dim):
-            pat[i*2] = r_int[i]
-            pat[i*2+1] = r_dur[i]
-        r_pat.append(pat)
-    return r_pat
+def diff_proportional(pat, var):
+    return True if max(pat)-min(pat) > var*2 else False
 
-def gen_gauss_random(mean, cov, size):
-    dim = len(mean)
-    return np.random.multivariate_normal(mean, cov, size)
-
-def gen_samples(mean, size):
-    dim = len(mean)
-    var = (mean*0.1)
-    cov = np.outer(var, var)
-    return gen_gauss_random(mean, cov, size)
-
-def gen_data(dim, v_dur, v_int, size):
-    m_dur = np.linspace(v_dur, v_dur, dim)
-    m_int = np.linspace(v_int, v_int, dim)
-    mean = np.linspace(0, 0, dim*2)
+def diff_normal(pat, mean, var):
+    dim = len(pat)
     for i in range(dim):
-        mean[i*2] = m_dur[i]
-        mean[i*2+1] = m_int[i]
-    pat = gen_samples(mean, size)
-    d = []
-    for i, p in enumerate(pat):
-        d.append(dist.euclidean(mean, p))
-    return d
+        if abs(pat[i]-mean[i]) > var:
+            return True
+    return False
 
-def draw_plot(data):
-    count, bins, ignored = plt.hist(data, 50)
-    plt.xlabel('Distnace')
-    plt.ylabel('Patterns')
-    plt.title('Pattern distribution')
-    plt.show()
+def gen_def_patterns(dim, value, size):
+    mean = np.linspace(value, value, dim)
+    true_pat = st.gen_samples(dim, mean, size)
+    #false_pat = np.random.uniform(value*0.75, value*1.25, (size, dim))
+    false_pat = np.random.uniform(value*0.85, value*1.15, (size, dim))
+    return mean, true_pat, false_pat
 
-if __name__ == '__main__':
-    n_samples = 1000
-    dim = 10
-    v_dur = 0.1
-    v_int = 0.2
-    data = gen_data(dim, v_dur, v_int, n_samples)
-    draw_plot(data)
-    #fake_data = gen_uni_random(dim, v_dur, v_int, n_samples)
-    #draw_plot(fake_data)
+def gen_multi_patterns(dim, value, v1, v2, size):
+    mean = np.linspace(value, value, dim)
+    m1 = np.linspace(v1, v2, dim)
+    m2 = np.linspace(v1, v2, dim)
+    true_pat = st.gen_samples(dim, m1, size/2)
+    np.append(true_pat, st.gen_samples(dim, m2, size/2), axis=0)
+    false_pat = np.random.uniform(value*0.75, value*1.25, (size, dim))
+    return mean, true_pat, false_pat
+
+def test_svm(true_pat, false_pat):
+    clf = svm.OneClassSVM(nu=0.002, kernel="rbf", gamma=0.1)
+    clf.fit(true_pat)
+    pred_true = clf.predict(true_pat)
+    pred_false = clf.predict(false_pat)
+    n_error_true = pred_true[pred_true == -1].size
+    n_error_false = pred_false[pred_false == 1].size
+
+    print(n_error_true, pred_true.size)
+    print(n_error_false, pred_false.size)
+    frr = n_error_true/pred_true.size
+    far = n_error_false/pred_false.size
+
+    return far, frr
+
+def var_one_interval(value, var, dim, size, n_test, alg):
+    mean, true_pat, false_pat = gen_def_patterns(dim, value, size)
+    for pat in true_pat:
+        pat[0] = np.random.uniform(value*0.75, value*1.25)
+    false_pat = [p for p in false_pat if diff_one_interval(p, mean, var)]
+    #print('patterns left for 1 diff: ', len(false_pat))
+
+    if(alg == 'svm'):
+        far, frr = test_svm(true_pat, false_pat)
+
+    return
+
+def var_proportional(value, var, dim, size, n_test, alg):
+    mean, true_pat, false_pat = gen_def_patterns(dim, value, size)
+    for pat in true_pat:
+        r = np.random.uniform(value*0.95, value*1.05)
+        pat = [p+r for p in pat]
+    #dist_pat = [p for p in false_pat if diff_proportional(p, var)]
+    #print('patterns left for prop: ', len(dist_pat))
+    return
+
+def var_multi_clusters(value, var, dim, size, n_test, alg):
+    interval = var*5
+    mean, true_pat, false_pat = gen_multi_patterns(dim, value, value-interval, value+interval, size)
+    #dist_pat = [p for p in false_pat if diff_normal(p, mean, var)]
+    #print('patterns left for multi: ', len(dist_pat))
+    return
