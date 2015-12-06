@@ -9,9 +9,10 @@ def make_rand_vector(dims, min_v, max_v):
     mag = sum(x**2 for x in vec) ** .5
     return [x/mag for x in vec]
 
-def gen_samples(dim, mean, size):
-    var = (mean * 0.1)**2
-    cov = np.outer(var, var)
+def gen_samples(dim, mean, var, size):
+    v_2 = var ** 2
+    vec = np.linspace(v_2, v_2, dim)
+    cov = np.outer(vec, vec)
     return np.random.multivariate_normal(mean, cov, size)
 
 def gen_data(dim, value, size):
@@ -30,16 +31,22 @@ def draw_plot(data):
     plt.show()
 
 if __name__ == '__main__':
-    n_samples = 10000
+    n_samples = 1000
     dim = 19
     value = 0.1
-    var = value * 0.1
+    #var = 0.01
+    vars = np.linspace(0.01, 0.05, 10)
     mean = np.linspace(value, value, dim)
     n_test = 100
     #data = gen_data(dim, value, n_samples)
     #draw_plot(data)
-    false_pat = np.random.uniform(value*0.75, value*1.25, (n_samples, dim))
     #draw_plot(fake_data)
-    test.var_one_interval(value, var, dim, n_samples, n_test, 'svm')
-    test.var_proportional(value, var, dim, n_samples, n_test, 'svm')
-    test.var_multi_clusters(value, var, dim, n_samples, n_test, 'svm')
+
+    test.var_interval(plt, value, vars, dim, n_samples, n_test, 'one')
+    test.var_interval(plt, value, vars, dim, n_samples, n_test, 'prop')
+    test.var_interval(plt, value, vars, dim, n_samples, n_test, 'multi')
+
+    #test.var_one_interval(plt, value, var, dim, n_samples, n_test)
+    #test.var_proportional(plt, value, var, dim, n_samples, n_test)
+    #test.var_multi_clusters(plt, value, var, dim, n_samples, n_test)
+    plt.show()
