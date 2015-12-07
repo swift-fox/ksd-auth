@@ -3,6 +3,7 @@ import statistics as st
 from sklearn import svm
 import scipy.spatial.distance as dist
 from sklearn.neighbors import NearestNeighbors
+import time
 
 def diff_one_interval(pat, mean, var):
     dim = len(pat)
@@ -135,37 +136,40 @@ def var_interval(plt, value, vars, dim, size, n_test, pvar):
         mean, true_pat, false_pat = gen_def_patterns(dim, value, var, size, pvar)
         for pat in true_pat:
             pat[0] = np.random.uniform(value-(var*3), value+(var*3))
-        sum_far, sum_frr = 0.0, 0.0
+        sum_far, sum_frr, s_time = 0.0, 0.0, time.clock()
         for i in range(n_test):
             euc_far, euc_frr = compute_error_rate(true_pat, false_pat, n_test, 'euc')
             sum_far += euc_far
             sum_frr += euc_frr
+        print 'Average time for euc: %.10f' % (time.clock() - s_time)
         avg_far = sum_far / n_test
         avg_frr = sum_frr / n_test
         print(avg_far, avg_frr)
         euc_fars.append(avg_far)
         euc_frrs.append(avg_frr)
 
-        sum_far, sum_frr = 0.0, 0.0
+        sum_far, sum_frr, s_time = 0.0, 0.0, time.clock()
         for i in range(n_test):
             euc_far, euc_frr = compute_error_rate(true_pat, false_pat, n_test, 'mah')
             sum_far += euc_far
             sum_frr += euc_frr
+        print 'Average time for mah: %.10f' % (time.clock() - s_time)
         avg_far = sum_far / n_test
         avg_frr = sum_frr / n_test
         print(avg_far, avg_frr)
         mah_fars.append(avg_far)
         mah_frrs.append(avg_frr)
 
-        sum_far, sum_frr = 0.0, 0.0
+        sum_far, sum_frr, s_time = 0.0, 0.0, time.clock()
         for i in range(n_test):
             euc_far, euc_frr = compute_error_rate(true_pat, false_pat, n_test, 'svm')
             sum_far += euc_far
             sum_frr += euc_frr
+        print 'Average time for svm: %.10f' % (time.clock() - s_time)
         avg_far = sum_far / n_test
         avg_frr = sum_frr / n_test
         print(avg_far, avg_frr)
-        print()
+        print
         svm_fars.append(avg_far)
         svm_frrs.append(avg_frr)
 
