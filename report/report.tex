@@ -25,7 +25,7 @@
 \documentclass[twocolumn,showpacs,%
   nofootinbib,aps,%superscriptaddress,
   eqsecnum,prd,notitlepage,showkeys,10pt]{revtex4-1}
-  
+
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{graphicx}
@@ -97,7 +97,7 @@ Unlike the password, keystroke dynamics is one of the biometric authentication s
 \subsection{Data structure}
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.5\textwidth]{keystroke}
+  \includegraphics[width=0.4\textwidth]{keystroke}
   \caption{Timing measurement in interval and duration}
   \label{fig:keystroke}
 \end{figure}
@@ -111,30 +111,40 @@ The pattern needs to be normalized because the storage is limited and in order t
 To filter imposter's patterns, a novelty detection algorithm is required. There are many researches to detect anomaly. The algorithms can be divided into statistical type, neural network, pattern recognition based on learning, and heuristics\cite{banerjee2012biometric}. We tested three common algorithms, which are the Nearest Neighbor, Mahalanobis distance, and one class SVMs, with changing the patterns.
 
 \section{Implementation}
+\subsection{Encryption}
+It's not secure to transmit the password and pattern in plaintext through the network. So we need to protect the password and pattern by encryption or message digest. In our implementation, we use one handshake protocol instead of multiple handshakes for better efficiency. The format of authentication message is Key{Hash(TS|Pattern)|TS|Pattern} such that TS is a timestamp. The Key is 128bit generated from MD5 message digest of password. When it comes to the encryption part, we encrypt the Hash(TS|Pattern)|TS|Pattern by AES algorithm. Moreover, we add a salt to for better diversity. With the timestamp and salt, it's invulnerable to rainbow attack.
+\par
+But someone could eavesdrop the message and resend the message to the server. It's easy to prevent the replay attack. In our implementation, the server record the timestamp. If the server receives a message with the same timestamp which already exists in the time window, the server will refuse the message. Of course, the server will also drop the message with invalid timestamp.
+\par
+The Hash(TS|Pattern) provides integrity protection for the message. In the implementation, we use SHA-1 message digest. After the server receives the message, the server will decrypt Hash(TS|Pattern)|TS|Pattern from the message, and compute the SHA-1 message digest from TS and Pattern. Then compare the hash value to that in the message to check if they match. If the two message digest are the same, then the integrity is fine. After that, if the validation of pattern is successful, then the authentication is fulfilled.
+\par
+However, there is some drawback in the protocol. Since the client couldn't authenticate the identity of the server, it's vulnerable to in-the-middle attack. The attacked could impersonate the server, get the message from the client and resend it to the server. Besides, the protocol is not secure when it comes to server break-in attack. The attacker could modify the time in the server.
+
 
 \section{Analysis}
-The performance of statistical and machine learning algorithms have already been tested in many studies. Thus, we focused on expecting actual users' patterns. Previous works are based on heuristic results or similar dataset. However, the pattern may not be even even if the same person types several times. It would be came from using different type of input devices or physical changes. For instance, it will show different patterns when using PC and keyboard than using mobile devices. Also, the more familiar users become to type the same password, the faster they type. Therefore, we tried to form as reliable synthetic environment as possible for the test. We tested the environment with assumptions and measured error rates. The error rates for pattern detection are divided into two parts which are False Acceptance Rate(FAR) and False Rejection Rate(FRR)\cite{cho2000web}. For each test case, the two error rates are computed for comparing performance.
+ We created a pattern generator to test algorithms. Our tests are focused on the prediction of the variation of user's patterns and comparing performances of pattern matching methods. The error rates for pattern detection are divided into two parts which are False Acceptance Rate(FAR) and False Rejection Rate(FRR)\cite{cho2000web}. For each test case, the two error rates are computed for comparing performance.
 
 \subsection{Environment}
-Test program is coded in python using Scipy, Numpy, and scikit-learn library. For each test, 1000 evenly distributed patterns of imposters are generated because we want to simulate the environment that a lot of imposters try to imitate the pattern. Also, the same number of patterns of genuine users are generated with satisfying gaussian distribution. It would be similar to a user's patterns. Unlike other researches, we tried to predict the variation of patterns.\par
-Our tests are focused on the variation of the patterns over time. First, only an interval of patterns would be different each time. Suppose that the password is mixed with a sequence of alphabets and that of numbers like `abcd1234.' In this cases, the user's patterns between word and numbers may not be expected. Second, we assume that the user's patterns would be fast or slow; however, those will be proportional. The ratio of keystroke pattern of a user will not change much even if the speed is different depending on the condition. Finally, the user may use different types of keyboards such as portable keyboard or touch keyboard on mobile devices other than regular keyboard. Then, we expect the patterns would form multiple clusters.
+Test program is coded in python using Scipy, Numpy, and scikit-learn library. For each test, 1000 evenly distributed patterns of imposters are generated because we want to simulate the environment that a lot of imposters try to imitate the pattern. Also, the same number of patterns of genuine users are generated and the distribution of points are the Gaussian. It should be similar to a user's patterns.
+\par
+Our tests are focused on the variation of the patterns over time. First, only an interval of patterns would be fluctuated. Suppose that the password is mixed with a sequence of alphabets and that of numbers like `abcd1234.' In this cases, the user's patterns of word and numbers may be stable except the interval between them. Second, we assume that the user's patterns would be fast or slow; however, those would be proportional. The third assumption is that the user may use different types of keyboards such as laptop, desktop keyboard, and touch keyboard on mobile devices. Then, we expected that the patterns will form multiple clusters.
 
 \subsubsection{Test Results}
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.5\textwidth]{one}
+  \includegraphics[width=0.4\textwidth]{one}
   \caption{Test result of patterns that only one of the intervals varies}
   \label{fig:one}
 \end{figure}
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.5\textwidth]{prop}
+  \includegraphics[width=0.4\textwidth]{prop}
   \caption{Test result of proportional patterns}
   \label{fig:prop}
 \end{figure}
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.5\textwidth]{multi}
+  \includegraphics[width=0.4\textwidth]{multi}
   \caption{Test result of patterns of multiple clusters}
   \label{fig:multi}
 \end{figure}
@@ -142,9 +152,7 @@ Our tests are focused on the variation of the patterns over time. First, only an
 Most of the error rates are not visible because they are very close to 0. As seen in the three tests, we concluded that the performances of the three algorithms are not much different regardless of the variation of the patterns. The most accurate method among them was the nearest neighbor method, the SVMs was next, and the Mahalanobis distance showed the worst performance. And with respect to computation time, the SVMs was the fastest, the nearest neighbor was next, and the Mahalanobis distance was the slowest. However, it would be the difference in library used. The SVMs and nearest neighbor using ball tree was implemented using scikit-learn library. On the other hand the Mahalanobis distance was measured using scipy library.
 
 \section{Defects}
-Although there are many researches and practical application of Keyboard Dynamics, there are problems in authenticating with the method. Assume that the mechanism is applied for Web-based system. Then, people can move cursors using arrow keys or mouse while typing and editing password. We just ignored the cases and assumed that the web page allows only password typed at once. Though it would make the users inconvenient, the web service will become more secure. If the mechanism is used for SSH, we don't have to worry about problems caused by arrow keys and mouse. However, there is still problems on pressing backspace key. For security enhancement, it is necessary to block the key inputs and use of mouse on the password window.\par
-Also, it is possible to sneak key timing patterns by spyware with key logger. Even if the pattern is encrypted before sent, the attacker can sneak the patterns recorded by the key logger. This type of threat can be prevented by sharing a nonce with server. This is the process: add the nonce to the key pattern, encrypt the pattern, send it to server, and the server decrypts and subtract the shared nonce. By doing so, even if the attacker stole the pattern, it would not match with the users pattern.\par
-In addition, a user's patterns change more frequently than other physiological traits or behavioral characteristics. We suggested a system that evaluates only the latest patterns like sliding window.
+Although there are many researches and practical application of Keyboard Dynamics, there are problems in authenticating with the method. Assume that the mechanism is applied for Web-based system. Then, people can move cursors using arrow keys or mouse while typing and editing password. We just ignored the cases and assumed that the web page allows only password typed at once. Though it would make the users inconvenient, the web service will become more secure. Also, key stroke patterns may be able to be recorded by spyware with key logger. In general, we don't have to worry about the attack because the pattern is encrypted before sent. If the encryption is impossible in the system, it can be protected by the attack by sharing a nonce with the server and adding it to the pattern. Finally, a user's patterns change more frequently and radically than other physiological traits or behavioral characteristics, and thus it would be a problem. We suggested a system that evaluates only the latest patterns like sliding window.
 
 \section{Conclusion}
 Through the project, we checked the algorithm is working by demo program and also tested the performance between algorithms. We suggested that the possible web-based authentication using keystroke dynamics by implementing and testing actual login web page. Unfortunately, it is not sure that the test data is significant compared to that from other research. However, the application developed for the experiments will be useful to test other algorithms with a myriad of possible fixed patterns and variations. It will help to create various environments for experiments.
