@@ -1,16 +1,8 @@
-The there are four core functions of our web server(backend) besides providing web content:
-1. Get the username, password and key stroke patterns from the browser.
-2. Send the matching result back to the browser.
-3. Call machine learning method: match and train.
-4. Deal with database.
+The there are four core functions of our web server(backend) besides providing web content: getting the username, password and key stroke patterns from the browser; sending the matching result back to the browser; calling machine learning method: match and train; dealing with database.
 
-So, to implement our web server, we:
-1. use python's BaseHTTPRequestHandler class to deal with the get and post http request.
-2. add some logic to call the decryption function and check weather the incoming data is corrupted.
-3. add some logic to call the match and train.
-4. write a dataManager class to handle the database activity.
+So, to implement our web server, we use python's BaseHTTPRequestHandler class to deal with the get and post http request and write a dataManager class to handle the database activity. We then add some logic to call the decryption function and check weather the incoming data is corrupted. Finally we add some logic to call the match and train.
 
-About implementation construct our web server 1.0.
+Above implementation construct our web server 1.0.
 Then we did some refactoring and used cgi labrary to build the web server 2.0
 
 
