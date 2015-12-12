@@ -111,6 +111,10 @@ The pattern needs to be normalized because the storage is limited and in order t
 To filter imposter's patterns, a novelty detection algorithm is required. There are many researches to detect anomaly. The algorithms can be divided into statistical type, neural network, pattern recognition based on learning, and heuristics\cite{banerjee2012biometric}. We tested three common algorithms, which are the Nearest Neighbor, Mahalanobis distance, and one class SVMs, with changing the patterns.
 
 \section{Implementation}
+Our system is built based on the B/S model. We use an HTML page as the frontend and program a series of Python sciprts as the backend. The frontend collects the timing pattern from the user and send it with encryption to the backend via AJAX. The backend retrieve previously stored feature pattern from a database and match it against the input with our novelty detection algorithm. If the matching is successful, a positive result is send to the frontend, and vice versa.
+
+A user's inputting habit may change over time. Therefore, we need to regenerate the feature pattern perioridically. Everytime the authentication is successful, we record the timing pattern from the user into database. And when 10 patterns are collected. We run the training routine of our novelty detection algorithm to generate a new feature pattern.
+
 \subsection{Encryption}
 It's not secure to transmit the password and pattern in plaintext through the network. So we need to protect the password and pattern by encryption or message digest. In our implementation, we use one handshake protocol instead of multiple handshakes for better efficiency. The format of authentication message is Key{Hash(TS|Pattern)|TS|Pattern} such that TS is timestamp. The Key is 128bit generated from MD5 message digest of password. We generate Hash(TS|Pattern) using SHA-1, which provides integrity protection for the message. We encrypt the Hash(TS|Pattern)|TS|Pattern by AES algorithm. Moreover, we add a salt to for better diversity. With the timestamp and salt, it's invulnerable to rainbow attack.
 \par
